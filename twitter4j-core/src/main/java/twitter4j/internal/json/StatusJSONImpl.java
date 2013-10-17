@@ -47,10 +47,11 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
     private long inReplyToUserId;
     private boolean isFavorited;
     private boolean isRetweeted;
-    private long favoriteCount;
+    private int favoriteCount;
     private String inReplyToScreenName;
     private GeoLocation geoLocation = null;
     private Place place = null;
+    // this field should be int in theory, but left as long for the serialized form compatibility - TFJ-790
     private long retweetCount;
     private boolean isPossiblySensitive;
     private String isoLanguageCode;
@@ -104,7 +105,7 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
         isRetweeted = getBoolean("retweeted", json);
         inReplyToScreenName = getUnescapedString("in_reply_to_screen_name", json);
         retweetCount = getLong("retweet_count", json);
-        favoriteCount = getLong("favorite_count", json);
+        favoriteCount = getInt("favorite_count", json);
         isPossiblySensitive = getBoolean("possibly_sensitive", json);
         try {
             if (!json.isNull("user")) {
@@ -312,12 +313,12 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
     public boolean isRetweeted() {
         return isRetweeted;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public long getFavoriteCount() {
+    public int getFavoriteCount() {
         return favoriteCount;
     }
 
@@ -351,8 +352,8 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
      * {@inheritDoc}
      */
     @Override
-    public long getRetweetCount() {
-        return retweetCount;
+    public int getRetweetCount() {
+        return (int) retweetCount;
     }
 
     /**
