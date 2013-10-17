@@ -279,6 +279,11 @@ public class OAuthAuthorization implements Authorization, java.io.Serializable, 
         long nonce = timestamp + RAND.nextInt();
         return generateAuthorizationHeader(method, url, params, String.valueOf(nonce), String.valueOf(timestamp), token);
     }
+    
+    /*package*/ public String xgenerateAuthorizationHeader(String nonce, String method, String url, HttpParameter[] params, OAuthToken token) {
+        long timestamp = System.currentTimeMillis() / 1000;
+        return generateAuthorizationHeader(method, url, params, nonce, String.valueOf(timestamp), token);
+    }
 
     public List<HttpParameter> generateOAuthSignatureHttpParams(String method, String url) {
         long timestamp = System.currentTimeMillis() / 1000;
@@ -306,7 +311,7 @@ public class OAuthAuthorization implements Authorization, java.io.Serializable, 
         String signature = generateSignature(oauthBaseString, oauthToken);
 
         oauthHeaderParams.add(new HttpParameter("oauth_signature", signature));
-
+        
         return oauthHeaderParams;
     }
 
@@ -318,7 +323,7 @@ public class OAuthAuthorization implements Authorization, java.io.Serializable, 
      * @return signature
      * @see <a href="http://oauth.net/core/1.0a/#rfc.section.9.2.1">OAuth Core - 9.2.1.  Generating Signature</a>
      */
-    /*package*/ String generateSignature(String data, OAuthToken token) {
+    /*package*/ public String generateSignature(String data, OAuthToken token) {
         byte[] byteHMAC = null;
         try {
             Mac mac = Mac.getInstance(HMAC_SHA1);
@@ -343,7 +348,10 @@ public class OAuthAuthorization implements Authorization, java.io.Serializable, 
             logger.error("Failed to get HmacSHA1 \"Message Authentication Code\" (MAC)", nsae);
             throw new AssertionError(nsae);
         }
-        return BASE64Encoder.encode(byteHMAC);
+        String sig = BASE64Encoder.encode(byteHMAC);
+        System.out.println("TSIGSTRING: " + data);
+        System.out.println("TSIGNATURE: " + sig);
+        return sig;
     }
 
     /*package*/
